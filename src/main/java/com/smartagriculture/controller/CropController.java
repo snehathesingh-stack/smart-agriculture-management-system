@@ -12,6 +12,7 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
+@CrossOrigin(origins = "http://localhost:3000")
 @RestController
 @RequestMapping("/farmers/{farmerId}/crops")
 public class CropController {
@@ -22,7 +23,6 @@ public class CropController {
         this.cropService = cropService;
     }
 
-    // ✅ ADD Crop for Farmer
     @PostMapping
     public ResponseEntity<ApiResponse<Crop>> addCrop(
             @PathVariable Long farmerId,
@@ -39,7 +39,6 @@ public class CropController {
         );
     }
 
-    // ✅ GET Crops (Pagination + Optional Season Filter)
     @GetMapping
     public ResponseEntity<ApiResponse<Page<Crop>>> getCrops(
             @PathVariable Long farmerId,
@@ -58,7 +57,6 @@ public class CropController {
         );
     }
 
-    // ✅ GET Total Revenue
     @GetMapping("/revenue")
     public ResponseEntity<ApiResponse<Double>> getRevenue(
             @PathVariable Long farmerId) {
@@ -75,7 +73,6 @@ public class CropController {
         );
     }
 
-    // ✅ GET Yield Summary Analytics
     @GetMapping("/yield-summary")
     public ResponseEntity<ApiResponse<YieldSummary>> getYieldSummary(
             @PathVariable Long farmerId) {
