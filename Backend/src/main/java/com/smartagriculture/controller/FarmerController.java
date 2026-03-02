@@ -13,9 +13,16 @@ import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
 
-@CrossOrigin(origins = "http://localhost:3000")
 @RestController
 @RequestMapping("/farmers")
+@CrossOrigin(
+        origins = {
+                "http://localhost:3000",
+                "https://smart-agriculture-backend-wsh4.onrender.com"
+        },
+        allowedHeaders = "*",
+        methods = {RequestMethod.GET, RequestMethod.POST, RequestMethod.PUT, RequestMethod.DELETE}
+)
 public class FarmerController {
 
     private final FarmerService farmerService;
