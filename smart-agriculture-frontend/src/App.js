@@ -34,16 +34,25 @@ function App() {
   const [isEditing, setIsEditing] = useState(false);
   const [openSnack, setOpenSnack] = useState(false);
   const [snackMessage, setSnackMessage] = useState("");
+  const [error, setError] = useState("");
 
-  const API_BASE = "http://localhost:8081";
+  const API_BASE =
+    "https://smart-agriculture-backend-wsh4.onrender.com";
 
   useEffect(() => {
     fetchFarmers();
   }, []);
 
+  // ================= FETCH FARMERS =================
   const fetchFarmers = async () => {
-    const response = await axios.get(`${API_BASE}/farmers`);
-    setFarmers(response.data.data);
+    try {
+      const response = await axios.get(`${API_BASE}/farmers`);
+      setFarmers(response.data?.data || []);
+      setError("");
+    } catch (err) {
+      console.error(err);
+      setError("Unable to connect to backend. Please check server.");
+    }
   };
 
   const handleChange = (e) => {
@@ -62,6 +71,7 @@ function App() {
     setIsEditing(false);
   };
 
+  // ================= SAVE FARMER =================
   const saveFarmer = async () => {
     try {
       if (
@@ -94,24 +104,32 @@ function App() {
       setOpenSnack(true);
       fetchFarmers();
       resetForm();
-
     } catch (error) {
-      alert("Operation failed. Check backend validation.");
+      console.error(error);
+      alert("Operation failed. Check backend or CORS.");
     }
   };
 
+  // ================= EDIT =================
   const editFarmer = (farmer) => {
     setForm(farmer);
     setIsEditing(true);
   };
 
+  // ================= DELETE =================
   const deleteFarmer = async (id) => {
-    if (!window.confirm("Are you sure you want to delete this farmer?")) return;
+    if (!window.confirm("Are you sure you want to delete this farmer?"))
+      return;
 
-    await axios.delete(`${API_BASE}/farmers/${id}`);
-    fetchFarmers();
-    setSnackMessage("Farmer deleted successfully ❌");
-    setOpenSnack(true);
+    try {
+      await axios.delete(`${API_BASE}/farmers/${id}`);
+      fetchFarmers();
+      setSnackMessage("Farmer deleted successfully ❌");
+      setOpenSnack(true);
+    } catch (error) {
+      console.error(error);
+      alert("Delete failed.");
+    }
   };
 
   return (
@@ -120,7 +138,13 @@ function App() {
         🌾 Smart Agriculture Management System
       </Typography>
 
-      {/* Form Card */}
+      {error && (
+        <Alert severity="error" sx={{ mb: 2 }}>
+          {error}
+        </Alert>
+      )}
+
+      {/* FORM */}
       <Card sx={{ marginBottom: 4 }}>
         <CardContent>
           <Typography variant="h6">
@@ -128,11 +152,37 @@ function App() {
           </Typography>
 
           <Box display="flex" gap={2} flexWrap="wrap" mt={2}>
-            <TextField name="name" label="Name" value={form.name} onChange={handleChange} />
-            <TextField name="phone" label="Phone" value={form.phone} onChange={handleChange} />
-            <TextField name="location" label="Location" value={form.location} onChange={handleChange} />
-            <TextField name="landArea" label="Land Area" type="number" value={form.landArea} onChange={handleChange} />
-            <TextField name="soilType" label="Soil Type" value={form.soilType} onChange={handleChange} />
+            <TextField
+              name="name"
+              label="Name"
+              value={form.name}
+              onChange={handleChange}
+            />
+            <TextField
+              name="phone"
+              label="Phone"
+              value={form.phone}
+              onChange={handleChange}
+            />
+            <TextField
+              name="location"
+              label="Location"
+              value={form.location}
+              onChange={handleChange}
+            />
+            <TextField
+              name="landArea"
+              label="Land Area"
+              type="number"
+              value={form.landArea}
+              onChange={handleChange}
+            />
+            <TextField
+              name="soilType"
+              label="Soil Type"
+              value={form.soilType}
+              onChange={handleChange}
+            />
           </Box>
 
           <Box mt={2}>
@@ -153,7 +203,7 @@ function App() {
         </CardContent>
       </Card>
 
-      {/* Table Card */}
+      {/* TABLE */}
       <Card>
         <CardContent>
           <Typography variant="h6">Farmer List</Typography>
@@ -181,7 +231,9 @@ function App() {
                     <IconButton onClick={() => editFarmer(farmer)}>
                       <EditIcon color="primary" />
                     </IconButton>
-                    <IconButton onClick={() => deleteFarmer(farmer.id)}>
+                    <IconButton
+                      onClick={() => deleteFarmer(farmer.id)}
+                    >
                       <DeleteIcon color="error" />
                     </IconButton>
                   </TableCell>
@@ -192,7 +244,6 @@ function App() {
         </CardContent>
       </Card>
 
-      {/* Snackbar */}
       <Snackbar
         open={openSnack}
         autoHideDuration={3000}
@@ -205,3 +256,4 @@ function App() {
 }
 
 export default App;
+console.log("API:", API_BASE);
