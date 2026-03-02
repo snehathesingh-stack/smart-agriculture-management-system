@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from "react";
-import { API } from "./api";
+import axios from "axios";
 import {
   TextField,
   Button,
@@ -12,13 +12,15 @@ import {
   TableCell,
   TableBody,
   Box,
-  Alert,
 } from "@mui/material";
 
+const API_BASE =
+  "https://smart-agriculture-backend-wsh4.onrender.com";
+
 function CropPage({ farmer }) {
+
   const [crops, setCrops] = useState([]);
   const [revenue, setRevenue] = useState(0);
-  const [error, setError] = useState("");
 
   const [form, setForm] = useState({
     cropName: "",
@@ -31,47 +33,29 @@ function CropPage({ farmer }) {
   useEffect(() => {
     fetchCrops();
     fetchRevenue();
-  }, []);
+  }, [farmer]);
 
-  // ================= FETCH CROPS =================
   const fetchCrops = async () => {
     try {
-      const res = await API.get(`/farmers/${farmer.id}/crops`);
+      const res = await axios.get(
+        `${API_BASE}/farmers/${farmer.id}/crops`
+      );
 
-      console.log("Crop API Response:", res.data);
+      setCrops(Array.isArray(res.data) ? res.data : []);
 
-      // ✅ Handle ApiResponse
-      if (res.data && Array.isArray(res.data.data)) {
-        setCrops(res.data.data);
-      }
-      // ✅ Handle plain List
-      else if (Array.isArray(res.data)) {
-        setCrops(res.data);
-      }
-      else {
-        setCrops([]);
-      }
-
-      setError("");
     } catch (err) {
       console.error(err);
-      setError("Unable to fetch crops.");
       setCrops([]);
     }
   };
 
-  // ================= FETCH REVENUE =================
   const fetchRevenue = async () => {
     try {
-      const res = await API.get(
-        `/farmers/${farmer.id}/crops/revenue`
+      const res = await axios.get(
+        `${API_BASE}/farmers/${farmer.id}/crops/revenue`
       );
 
-      if (res.data && res.data.data !== undefined) {
-        setRevenue(res.data.data);
-      } else {
-        setRevenue(res.data);
-      }
+      setRevenue(res.data);
 
     } catch (err) {
       console.error(err);
@@ -83,7 +67,6 @@ function CropPage({ farmer }) {
     setForm({ ...form, [e.target.name]: e.target.value });
   };
 
-  // ================= ADD CROP =================
   const addCrop = async () => {
     if (
       !form.cropName ||
@@ -92,34 +75,31 @@ function CropPage({ farmer }) {
       !form.actualYield ||
       !form.marketPrice
     ) {
-      alert("Please fill all fields");
+      alert("Fill all fields");
       return;
     }
 
-    try {
-      await API.post(`/farmers/${farmer.id}/crops`, {
+    await axios.post(
+      `${API_BASE}/farmers/${farmer.id}/crops`,
+      {
         cropName: form.cropName,
         season: form.season,
         expectedYield: Number(form.expectedYield),
         actualYield: Number(form.actualYield),
         marketPrice: Number(form.marketPrice),
-      });
+      }
+    );
 
-      fetchCrops();
-      fetchRevenue();
+    fetchCrops();
+    fetchRevenue();
 
-      setForm({
-        cropName: "",
-        season: "",
-        expectedYield: "",
-        actualYield: "",
-        marketPrice: "",
-      });
-
-    } catch (err) {
-      console.error(err);
-      alert("Failed to add crop");
-    }
+    setForm({
+      cropName: "",
+      season: "",
+      expectedYield: "",
+      actualYield: "",
+      marketPrice: "",
+    });
   };
 
   return (
@@ -128,14 +108,10 @@ function CropPage({ farmer }) {
         Crops of {farmer.name}
       </Typography>
 
-      {error && <Alert severity="error">{error}</Alert>}
-
-      {/* ================= FORM ================= */}
       <Card sx={{ mb: 4 }}>
         <CardContent>
           <Box display="flex" gap={2} flexWrap="wrap">
 
-            {/* Crop Dropdown */}
             <TextField
               select
               name="cropName"
@@ -149,10 +125,8 @@ function CropPage({ farmer }) {
               <option value="Wheat">Wheat</option>
               <option value="Cotton">Cotton</option>
               <option value="Sugarcane">Sugarcane</option>
-              <option value="Maize">Maize</option>
             </TextField>
 
-            {/* Season Dropdown */}
             <TextField
               select
               name="season"
@@ -194,16 +168,15 @@ function CropPage({ farmer }) {
             <Button variant="contained" onClick={addCrop}>
               Add Crop
             </Button>
+
           </Box>
         </CardContent>
       </Card>
 
-      {/* ================= REVENUE ================= */}
-      <Typography variant="h6" sx={{ mb: 2 }}>
+      <Typography variant="h6">
         Total Revenue: ₹ {revenue}
       </Typography>
 
-      {/* ================= TABLE ================= */}
       <Table>
         <TableHead>
           <TableRow>
@@ -216,7 +189,7 @@ function CropPage({ farmer }) {
         </TableHead>
 
         <TableBody>
-          {Array.isArray(crops) && crops.length > 0 ? (
+          {crops.length > 0 ? (
             crops.map((crop) => (
               <TableRow key={crop.id}>
                 <TableCell>{crop.cropName}</TableCell>

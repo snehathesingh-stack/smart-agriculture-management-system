@@ -5,7 +5,10 @@ import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.Positive;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
+
 @Entity
+@Table(name = "crop")
 public class Crop {
 
     @Id
@@ -13,28 +16,35 @@ public class Crop {
     private Long id;
 
     @NotBlank(message = "Crop name is required")
+    @Column(name = "crop_name", nullable = false)
     private String cropName;
 
     @NotBlank(message = "Season is required")
+    @Column(nullable = false)
     private String season;
 
     @NotNull(message = "Expected yield is required")
     @Positive(message = "Expected yield must be positive")
+    @Column(name = "expected_yield", nullable = false)
     private Double expectedYield;
 
     @NotNull(message = "Actual yield is required")
     @Positive(message = "Actual yield must be positive")
+    @Column(name = "actual_yield", nullable = false)
     private Double actualYield;
 
     @NotNull(message = "Market price is required")
     @Positive(message = "Market price must be positive")
+    @Column(name = "market_price", nullable = false)
     private Double marketPrice;
 
-    @ManyToOne
-    @JoinColumn(name = "farmer_id")
+    // ================= RELATIONSHIP =================
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "farmer_id", nullable = false)
+    @JsonIgnore   // Prevent infinite recursion
     private Farmer farmer;
 
-    // Getters & Setters
+    // ================= GETTERS & SETTERS =================
 
     public Long getId() {
         return id;
@@ -87,29 +97,4 @@ public class Crop {
     public void setFarmer(Farmer farmer) {
         this.farmer = farmer;
     }
-}
-package com.smartagriculture.entity;
-
-import jakarta.persistence.*;
-        import jakarta.validation.constraints.NotBlank;
-import jakarta.validation.constraints.NotNull;
-
-@Entity
-public class Crop {
-
-    @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Long id;
-
-    @NotBlank
-    private String cropName;
-
-    @NotNull
-    private Double expectedYieldPerAcre;
-
-    @ManyToOne
-    @JoinColumn(name = "farmer_id")
-    private Farmer farmer;
-
-    // getters and setters
 }
