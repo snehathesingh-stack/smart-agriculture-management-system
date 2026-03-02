@@ -1,161 +1,61 @@
-import React, { useEffect, useState } from "react";
-import { API } from "./api";
-import {
-  TextField,
-  Button,
-  Typography,
-  Card,
-  CardContent,
-  Table,
-  TableHead,
-  TableRow,
-  TableCell,
-  TableBody,
-  Box,
-  Alert,
-} from "@mui/material";
+import React from "react";
 
-function FarmerPage({ setSelectedFarmer, setView }) {
-  const [farmers, setFarmers] = useState([]);
-  const [error, setError] = useState("");
-  const [form, setForm] = useState({
-    name: "",
-    phone: "",
-    location: "",
-    landArea: "",
-    soilType: "",
-  });
-
-  useEffect(() => {
-    fetchFarmers();
-  }, []);
-
-  // ✅ SAFE FETCH FIX
-  const fetchFarmers = async () => {
-    try {
-      const res = await API.get("/farmers");
-
-      // Works for both List and ApiResponse
-      if (Array.isArray(res.data)) {
-        setFarmers(res.data);
-      } else if (Array.isArray(res.data.data)) {
-        setFarmers(res.data.data);
-      } else {
-        setFarmers([]);
-      }
-
-      setError("");
-    } catch (err) {
-      setError("Unable to fetch farmers.");
-      setFarmers([]);
-    }
-  };
-
-  const handleChange = (e) => {
-    setForm({ ...form, [e.target.name]: e.target.value });
-  };
-
-  const addFarmer = async () => {
-    if (!/^\d{10}$/.test(form.phone)) {
-      alert("Phone must be exactly 10 digits");
-      return;
-    }
-
-    try {
-      await API.post("/farmers", {
-        ...form,
-        landArea: Number(form.landArea),
-      });
-
-      fetchFarmers();
-      setForm({
-        name: "",
-        phone: "",
-        location: "",
-        landArea: "",
-        soilType: "",
-      });
-    } catch {
-      alert("Failed to add farmer");
-    }
-  };
-
+function FarmerList({ farmers, openCropPage }) {
   return (
-    <>
-      <Typography variant="h4" gutterBottom>
-        Farmer Management
-      </Typography>
+    <div style={{ padding: "40px" }}>
+      <h2 style={{ color: "#2e7d32" }}>🌾 Farmers</h2>
 
-      {error && <Alert severity="error">{error}</Alert>}
-
-      <Card sx={{ mb: 4 }}>
-        <CardContent>
-          <Box display="flex" gap={2} flexWrap="wrap">
-            <TextField name="name" label="Name" value={form.name} onChange={handleChange} />
-            <TextField name="phone" label="Phone (10 digits)" value={form.phone} onChange={handleChange} />
-            <TextField name="location" label="Location" value={form.location} onChange={handleChange} />
-            <TextField name="landArea" label="Land Area" type="number" value={form.landArea} onChange={handleChange} />
-
-            <TextField
-              select
-              name="soilType"
-              label="Soil"
-              value={form.soilType}
-              onChange={handleChange}
-              SelectProps={{ native: true }}
-            >
-              <option value="">Select Soil</option>
-              <option value="Black">Black</option>
-              <option value="Red">Red</option>
-              <option value="Loamy">Loamy</option>
-              <option value="Clay">Clay</option>
-              <option value="Sandy">Sandy</option>
-            </TextField>
-
-            <Button variant="contained" onClick={addFarmer}>
-              Add
-            </Button>
-          </Box>
-        </CardContent>
-      </Card>
-
-      <Table>
-        <TableHead>
-          <TableRow>
-            <TableCell>Name</TableCell>
-            <TableCell>Phone</TableCell>
-            <TableCell>Location</TableCell>
-            <TableCell>Land</TableCell>
-            <TableCell>Soil</TableCell>
-            <TableCell>Manage Crops</TableCell>
-          </TableRow>
-        </TableHead>
-        <TableBody>
-          {Array.isArray(farmers) &&
-            farmers.map((farmer) => (
-              <TableRow key={farmer.id}>
-                <TableCell>{farmer.name}</TableCell>
-                <TableCell>{farmer.phone}</TableCell>
-                <TableCell>{farmer.location}</TableCell>
-                <TableCell>{farmer.landArea}</TableCell>
-                <TableCell>{farmer.soilType}</TableCell>
-                <TableCell>
-                  <Button
-                    variant="outlined"
-                    onClick={() => {
-                      setSelectedFarmer(farmer);
-                      setView("crops");
-                    }}
-                  >
-                    Manage Crops
-                  </Button>
-                </TableCell>
-              </TableRow>
-            ))}
-        </TableBody>
-      </Table>
-    </>
+      <table style={tableStyle}>
+        <thead>
+          <tr style={{ background: "#2e7d32", color: "white" }}>
+            <th>ID</th>
+            <th>Name</th>
+            <th>Phone</th>
+            <th>Location</th>
+            <th>Land Area</th>
+            <th>Soil</th>
+            <th>Crops</th>
+          </tr>
+        </thead>
+        <tbody>
+          {farmers.map((farmer) => (
+            <tr key={farmer.id}>
+              <td>{farmer.id}</td>
+              <td>{farmer.name}</td>
+              <td>{farmer.phone}</td>
+              <td>{farmer.location}</td>
+              <td>{farmer.landArea}</td>
+              <td>{farmer.soilType}</td>
+              <td>
+                <button
+                  style={buttonStyle}
+                  onClick={() => openCropPage(farmer)}
+                >
+                  View Crops
+                </button>
+              </td>
+            </tr>
+          ))}
+        </tbody>
+      </table>
+    </div>
   );
 }
 
-export default FarmerPage;
+const tableStyle = {
+  width: "100%",
+  borderCollapse: "collapse",
+  background: "white",
+  boxShadow: "0 2px 10px rgba(0,0,0,0.1)"
+};
+
+const buttonStyle = {
+  padding: "6px 12px",
+  background: "#2e7d32",
+  color: "white",
+  border: "none",
+  borderRadius: "4px",
+  cursor: "pointer"
+};
+
+export default FarmerList;

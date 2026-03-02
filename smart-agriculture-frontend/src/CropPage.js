@@ -18,15 +18,10 @@ function CropPage({ farmer }) {
   }, []);
 
   const fetchCrops = async () => {
-    try {
-      const response = await axios.get(
-        `${API_BASE}/farmers/${farmer.id}/crops`
-      );
-      setCrops(response.data || []);
-    } catch (error) {
-      console.error(error);
-      setCrops([]);
-    }
+    const response = await axios.get(
+      `${API_BASE}/farmers/${farmer.id}/crops`
+    );
+    setCrops(response.data || []);
   };
 
   const handleChange = (e) => {
@@ -34,23 +29,18 @@ function CropPage({ farmer }) {
   };
 
   const addCrop = async () => {
-    try {
-      await axios.post(
-        `${API_BASE}/farmers/${farmer.id}/crops`,
-        form
-      );
-      fetchCrops();
-      setForm({
-        cropName: "",
-        season: "",
-        expectedYield: "",
-        actualYield: "",
-        marketPrice: "",
-      });
-    } catch (error) {
-      console.error(error);
-      alert("Error adding crop");
-    }
+    await axios.post(
+      `${API_BASE}/farmers/${farmer.id}/crops`,
+      form
+    );
+    fetchCrops();
+    setForm({
+      cropName: "",
+      season: "",
+      expectedYield: "",
+      actualYield: "",
+      marketPrice: "",
+    });
   };
 
   const totalRevenue = crops.reduce(
@@ -59,82 +49,99 @@ function CropPage({ farmer }) {
   );
 
   return (
-    <div>
-      <h2>Crops of {farmer.name}</h2>
+    <div style={{ padding: "40px" }}>
+      <h2 style={{ color: "#2e7d32" }}>
+        🌱 Crops of {farmer.name} (ID: {farmer.id})
+      </h2>
 
-      {/* Form */}
-      <select name="cropName" value={form.cropName} onChange={handleChange}>
-        <option value="">Select Crop</option>
-        <option value="Rice">Rice</option>
-        <option value="Wheat">Wheat</option>
-        <option value="Cotton">Cotton</option>
-        <option value="Sugarcane">Sugarcane</option>
-      </select>
+      <div style={{ marginBottom: "20px" }}>
+        <select name="cropName" value={form.cropName} onChange={handleChange}>
+          <option value="">Select Crop</option>
+          <option value="Rice">Rice</option>
+          <option value="Wheat">Wheat</option>
+          <option value="Cotton">Cotton</option>
+          <option value="Sugarcane">Sugarcane</option>
+        </select>
 
-      <select name="season" value={form.season} onChange={handleChange}>
-        <option value="">Select Season</option>
-        <option value="Kharif">Kharif</option>
-        <option value="Rabi">Rabi</option>
-        <option value="Zaid">Zaid</option>
-      </select>
+        <select name="season" value={form.season} onChange={handleChange}>
+          <option value="">Select Season</option>
+          <option value="Kharif">Kharif</option>
+          <option value="Rabi">Rabi</option>
+          <option value="Zaid">Zaid</option>
+        </select>
 
-      <input
-        type="number"
-        name="expectedYield"
-        placeholder="Expected Yield"
-        value={form.expectedYield}
-        onChange={handleChange}
-      />
+        <input
+          type="number"
+          name="expectedYield"
+          placeholder="Expected Yield"
+          value={form.expectedYield}
+          onChange={handleChange}
+        />
 
-      <input
-        type="number"
-        name="actualYield"
-        placeholder="Actual Yield"
-        value={form.actualYield}
-        onChange={handleChange}
-      />
+        <input
+          type="number"
+          name="actualYield"
+          placeholder="Actual Yield"
+          value={form.actualYield}
+          onChange={handleChange}
+        />
 
-      <input
-        type="number"
-        name="marketPrice"
-        placeholder="Market Price"
-        value={form.marketPrice}
-        onChange={handleChange}
-      />
+        <input
+          type="number"
+          name="marketPrice"
+          placeholder="Market Price"
+          value={form.marketPrice}
+          onChange={handleChange}
+        />
 
-      <button onClick={addCrop}>Add Crop</button>
+        <button style={buttonStyle} onClick={addCrop}>
+          Add Crop
+        </button>
+      </div>
 
       <h3>Total Revenue: ₹ {totalRevenue}</h3>
 
-      {/* Table */}
-      {crops.length === 0 ? (
-        <p>No crops found</p>
-      ) : (
-        <table border="1">
-          <thead>
-            <tr>
-              <th>Crop</th>
-              <th>Season</th>
-              <th>Expected</th>
-              <th>Actual</th>
-              <th>Market Price</th>
+      <table style={tableStyle}>
+        <thead>
+          <tr style={{ background: "#2e7d32", color: "white" }}>
+            <th>Crop</th>
+            <th>Season</th>
+            <th>Expected</th>
+            <th>Actual</th>
+            <th>Market Price</th>
+          </tr>
+        </thead>
+        <tbody>
+          {crops.map((crop) => (
+            <tr key={crop.id}>
+              <td>{crop.cropName}</td>
+              <td>{crop.season}</td>
+              <td>{crop.expectedYield}</td>
+              <td>{crop.actualYield}</td>
+              <td>{crop.marketPrice}</td>
             </tr>
-          </thead>
-          <tbody>
-            {crops.map((crop) => (
-              <tr key={crop.id}>
-                <td>{crop.cropName}</td>
-                <td>{crop.season}</td>
-                <td>{crop.expectedYield}</td>
-                <td>{crop.actualYield}</td>
-                <td>{crop.marketPrice}</td>
-              </tr>
-            ))}
-          </tbody>
-        </table>
-      )}
+          ))}
+        </tbody>
+      </table>
     </div>
   );
 }
+
+const tableStyle = {
+  width: "100%",
+  borderCollapse: "collapse",
+  background: "white",
+  boxShadow: "0 2px 10px rgba(0,0,0,0.1)"
+};
+
+const buttonStyle = {
+  padding: "8px 14px",
+  background: "#2e7d32",
+  color: "white",
+  border: "none",
+  borderRadius: "4px",
+  cursor: "pointer",
+  marginLeft: "10px"
+};
 
 export default CropPage;
