@@ -12,11 +12,14 @@ import {
   TableCell,
   TableBody,
   Box,
+  Alert,
 } from "@mui/material";
 
 function CropPage({ farmer }) {
   const [crops, setCrops] = useState([]);
   const [revenue, setRevenue] = useState(0);
+  const [error, setError] = useState("");
+
   const [form, setForm] = useState({
     cropName: "",
     season: "",
@@ -30,35 +33,48 @@ function CropPage({ farmer }) {
     fetchRevenue();
   }, []);
 
-  // ✅ FIXED FETCH (handles ApiResponse)
+  // ================= FETCH CROPS =================
   const fetchCrops = async () => {
     try {
       const res = await API.get(`/farmers/${farmer.id}/crops`);
 
-      if (Array.isArray(res.data.data)) {
+      console.log("Crop API Response:", res.data);
+
+      // ✅ Handle ApiResponse
+      if (res.data && Array.isArray(res.data.data)) {
         setCrops(res.data.data);
-      } else if (Array.isArray(res.data)) {
+      }
+      // ✅ Handle plain List
+      else if (Array.isArray(res.data)) {
         setCrops(res.data);
-      } else {
+      }
+      else {
         setCrops([]);
       }
-    } catch {
+
+      setError("");
+    } catch (err) {
+      console.error(err);
+      setError("Unable to fetch crops.");
       setCrops([]);
     }
   };
 
+  // ================= FETCH REVENUE =================
   const fetchRevenue = async () => {
     try {
       const res = await API.get(
         `/farmers/${farmer.id}/crops/revenue`
       );
 
-      if (res.data.data !== undefined) {
+      if (res.data && res.data.data !== undefined) {
         setRevenue(res.data.data);
       } else {
         setRevenue(res.data);
       }
-    } catch {
+
+    } catch (err) {
+      console.error(err);
       setRevenue(0);
     }
   };
@@ -67,10 +83,23 @@ function CropPage({ farmer }) {
     setForm({ ...form, [e.target.name]: e.target.value });
   };
 
+  // ================= ADD CROP =================
   const addCrop = async () => {
+    if (
+      !form.cropName ||
+      !form.season ||
+      !form.expectedYield ||
+      !form.actualYield ||
+      !form.marketPrice
+    ) {
+      alert("Please fill all fields");
+      return;
+    }
+
     try {
       await API.post(`/farmers/${farmer.id}/crops`, {
-        ...form,
+        cropName: form.cropName,
+        season: form.season,
         expectedYield: Number(form.expectedYield),
         actualYield: Number(form.actualYield),
         marketPrice: Number(form.marketPrice),
@@ -86,7 +115,9 @@ function CropPage({ farmer }) {
         actualYield: "",
         marketPrice: "",
       });
-    } catch {
+
+    } catch (err) {
+      console.error(err);
       alert("Failed to add crop");
     }
   };
@@ -97,7 +128,9 @@ function CropPage({ farmer }) {
         Crops of {farmer.name}
       </Typography>
 
-      {/* FORM */}
+      {error && <Alert severity="error">{error}</Alert>}
+
+      {/* ================= FORM ================= */}
       <Card sx={{ mb: 4 }}>
         <CardContent>
           <Box display="flex" gap={2} flexWrap="wrap">
@@ -165,12 +198,12 @@ function CropPage({ farmer }) {
         </CardContent>
       </Card>
 
-      {/* REVENUE */}
+      {/* ================= REVENUE ================= */}
       <Typography variant="h6" sx={{ mb: 2 }}>
         Total Revenue: ₹ {revenue}
       </Typography>
 
-      {/* TABLE */}
+      {/* ================= TABLE ================= */}
       <Table>
         <TableHead>
           <TableRow>
@@ -183,7 +216,7 @@ function CropPage({ farmer }) {
         </TableHead>
 
         <TableBody>
-          {Array.isArray(crops) &&
+          {Array.isArray(crops) && crops.length > 0 ? (
             crops.map((crop) => (
               <TableRow key={crop.id}>
                 <TableCell>{crop.cropName}</TableCell>
@@ -192,7 +225,14 @@ function CropPage({ farmer }) {
                 <TableCell>{crop.actualYield}</TableCell>
                 <TableCell>{crop.marketPrice}</TableCell>
               </TableRow>
-            ))}
+            ))
+          ) : (
+            <TableRow>
+              <TableCell colSpan={5} align="center">
+                No crops found
+              </TableCell>
+            </TableRow>
+          )}
         </TableBody>
       </Table>
     </>
