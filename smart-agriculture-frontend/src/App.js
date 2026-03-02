@@ -29,6 +29,7 @@ function App() {
     location: "",
     landArea: "",
     soilType: "",
+    cropName: "",
   });
 
   const [isEditing, setIsEditing] = useState(false);
@@ -43,15 +44,14 @@ function App() {
     fetchFarmers();
   }, []);
 
-  // ================= FETCH FARMERS =================
+  // ================= FETCH =================
   const fetchFarmers = async () => {
     try {
       const response = await axios.get(`${API_BASE}/farmers`);
       setFarmers(response.data?.data || []);
       setError("");
     } catch (err) {
-      console.error(err);
-      setError("Unable to connect to backend. Please check server.");
+      setError("Unable to connect to backend.");
     }
   };
 
@@ -67,11 +67,12 @@ function App() {
       location: "",
       landArea: "",
       soilType: "",
+      cropName: "",
     });
     setIsEditing(false);
   };
 
-  // ================= SAVE FARMER =================
+  // ================= SAVE =================
   const saveFarmer = async () => {
     try {
       if (
@@ -79,9 +80,16 @@ function App() {
         !form.phone ||
         !form.location ||
         !form.landArea ||
-        !form.soilType
+        !form.soilType ||
+        !form.cropName
       ) {
         alert("Please fill all fields");
+        return;
+      }
+
+      // ✅ Phone validation moved here
+      if (!/^\d{10}$/.test(form.phone)) {
+        alert("Phone number must be exactly 10 digits");
         return;
       }
 
@@ -90,7 +98,8 @@ function App() {
         phone: form.phone.trim(),
         location: form.location.trim(),
         landArea: Number(form.landArea),
-        soilType: form.soilType.trim(),
+        soilType: form.soilType,
+        cropName: form.cropName,
       };
 
       if (isEditing) {
@@ -105,29 +114,24 @@ function App() {
       fetchFarmers();
       resetForm();
     } catch (error) {
-      console.error(error);
       alert("Operation failed. Check backend or CORS.");
     }
   };
 
-  // ================= EDIT =================
   const editFarmer = (farmer) => {
     setForm(farmer);
     setIsEditing(true);
   };
 
-  // ================= DELETE =================
   const deleteFarmer = async (id) => {
-    if (!window.confirm("Are you sure you want to delete this farmer?"))
-      return;
+    if (!window.confirm("Are you sure?")) return;
 
     try {
       await axios.delete(`${API_BASE}/farmers/${id}`);
       fetchFarmers();
-      setSnackMessage("Farmer deleted successfully ❌");
+      setSnackMessage("Farmer deleted ❌");
       setOpenSnack(true);
     } catch (error) {
-      console.error(error);
       alert("Delete failed.");
     }
   };
@@ -138,13 +142,9 @@ function App() {
         🌾 Smart Agriculture Management System
       </Typography>
 
-      {error && (
-        <Alert severity="error" sx={{ mb: 2 }}>
-          {error}
-        </Alert>
-      )}
+      {error && <Alert severity="error">{error}</Alert>}
 
-      {/* FORM */}
+      {/* ================= FORM ================= */}
       <Card sx={{ marginBottom: 4 }}>
         <CardContent>
           <Typography variant="h6">
@@ -158,18 +158,28 @@ function App() {
               value={form.name}
               onChange={handleChange}
             />
+
             <TextField
               name="phone"
-              label="Phone"
+              label="Phone (10 digits)"
               value={form.phone}
               onChange={handleChange}
+              inputProps={{ maxLength: 10 }}
+              error={form.phone && !/^\d{10}$/.test(form.phone)}
+              helperText={
+                form.phone && !/^\d{10}$/.test(form.phone)
+                  ? "Phone must be exactly 10 digits"
+                  : ""
+              }
             />
+
             <TextField
               name="location"
               label="Location"
               value={form.location}
               onChange={handleChange}
             />
+
             <TextField
               name="landArea"
               label="Land Area"
@@ -177,12 +187,39 @@ function App() {
               value={form.landArea}
               onChange={handleChange}
             />
+
+            {/* Soil Dropdown */}
             <TextField
+              select
               name="soilType"
               label="Soil Type"
               value={form.soilType}
               onChange={handleChange}
-            />
+              SelectProps={{ native: true }}
+            >
+              <option value="">Select Soil</option>
+              <option value="Black">Black</option>
+              <option value="Red">Red</option>
+              <option value="Loamy">Loamy</option>
+              <option value="Clay">Clay</option>
+              <option value="Sandy">Sandy</option>
+            </TextField>
+
+            {/* Crop Dropdown */}
+            <TextField
+              select
+              name="cropName"
+              label="Crop"
+              value={form.cropName}
+              onChange={handleChange}
+              SelectProps={{ native: true }}
+            >
+              <option value="">Select Crop</option>
+              <option value="Rice">Rice</option>
+              <option value="Wheat">Wheat</option>
+              <option value="Cotton">Cotton</option>
+              <option value="Sugarcane">Sugarcane</option>
+            </TextField>
           </Box>
 
           <Box mt={2}>
@@ -203,7 +240,7 @@ function App() {
         </CardContent>
       </Card>
 
-      {/* TABLE */}
+      {/* ================= TABLE ================= */}
       <Card>
         <CardContent>
           <Typography variant="h6">Farmer List</Typography>
@@ -215,7 +252,8 @@ function App() {
                 <TableCell sx={{ color: "white" }}>Phone</TableCell>
                 <TableCell sx={{ color: "white" }}>Location</TableCell>
                 <TableCell sx={{ color: "white" }}>Land Area</TableCell>
-                <TableCell sx={{ color: "white" }}>Soil Type</TableCell>
+                <TableCell sx={{ color: "white" }}>Soil</TableCell>
+                <TableCell sx={{ color: "white" }}>Crop</TableCell>
                 <TableCell sx={{ color: "white" }}>Actions</TableCell>
               </TableRow>
             </TableHead>
@@ -227,6 +265,7 @@ function App() {
                   <TableCell>{farmer.location}</TableCell>
                   <TableCell>{farmer.landArea}</TableCell>
                   <TableCell>{farmer.soilType}</TableCell>
+                  <TableCell>{farmer.cropName}</TableCell>
                   <TableCell>
                     <IconButton onClick={() => editFarmer(farmer)}>
                       <EditIcon color="primary" />

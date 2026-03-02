@@ -9,14 +9,11 @@ import java.util.List;
 
 public interface CropRepository extends JpaRepository<Crop, Long> {
 
-    // For pagination
     Page<Crop> findByFarmerId(Long farmerId, Pageable pageable);
 
-    // For seasonal filter
     Page<Crop> findByFarmerIdAndSeason(Long farmerId,
                                        String season,
                                        Pageable pageable);
 
-    // For revenue calculation (non-paginated)
     List<Crop> findByFarmerId(Long farmerId);
 }

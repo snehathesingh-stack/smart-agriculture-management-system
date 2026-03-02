@@ -88,3 +88,28 @@ public class Crop {
         this.farmer = farmer;
     }
 }
+package com.smartagriculture.entity;
+
+import jakarta.persistence.*;
+        import jakarta.validation.constraints.NotBlank;
+import jakarta.validation.constraints.NotNull;
+
+@Entity
+public class Crop {
+
+    @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    private Long id;
+
+    @NotBlank
+    private String cropName;
+
+    @NotNull
+    private Double expectedYieldPerAcre;
+
+    @ManyToOne
+    @JoinColumn(name = "farmer_id")
+    private Farmer farmer;
+
+    // getters and setters
+}

@@ -2,19 +2,15 @@ package com.smartagriculture.controller;
 
 import com.smartagriculture.entity.Crop;
 import com.smartagriculture.response.ApiResponse;
-import com.smartagriculture.response.YieldSummary;
 import com.smartagriculture.service.CropService;
-
 import jakarta.validation.Valid;
-
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
-import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
-@CrossOrigin(origins = "http://localhost:3000")
 @RestController
 @RequestMapping("/farmers/{farmerId}/crops")
+@CrossOrigin(origins = "*")
 public class CropController {
 
     private final CropService cropService;
@@ -23,69 +19,95 @@ public class CropController {
         this.cropService = cropService;
     }
 
+    // =============================
+    // Add Crop
+    // =============================
     @PostMapping
-    public ResponseEntity<ApiResponse<Crop>> addCrop(
+    public ApiResponse<Crop> addCrop(
             @PathVariable Long farmerId,
             @Valid @RequestBody Crop crop) {
 
-        Crop savedCrop = cropService.addCrop(farmerId, crop);
-
-        return ResponseEntity.ok(
-                new ApiResponse<>(
-                        200,
-                        "Crop added successfully",
-                        savedCrop
-                )
+        return new ApiResponse<>(
+                200,
+                "Crop added successfully",
+                cropService.addCrop(farmerId, crop)
         );
     }
 
+    // =============================
+    // Get Crops (Paginated)
+    // =============================
     @GetMapping
-    public ResponseEntity<ApiResponse<Page<Crop>>> getCrops(
+    public ApiResponse<Page<Crop>> getCrops(
             @PathVariable Long farmerId,
-            @RequestParam(required = false) String season,
             Pageable pageable) {
 
-        Page<Crop> crops =
-                cropService.getCrops(farmerId, season, pageable);
-
-        return ResponseEntity.ok(
-                new ApiResponse<>(
-                        200,
-                        "Crops fetched successfully",
-                        crops
-                )
+        return new ApiResponse<>(
+                200,
+                "Crops fetched successfully",
+                cropService.getCrops(farmerId, pageable)
         );
     }
 
-    @GetMapping("/revenue")
-    public ResponseEntity<ApiResponse<Double>> getRevenue(
+    // =============================
+    // Get Crops by Season
+    // =============================
+    @GetMapping("/season")
+    public ApiResponse<Page<Crop>> getCropsBySeason(
+            @PathVariable Long farmerId,
+            @RequestParam String season,
+            Pageable pageable) {
+
+        return new ApiResponse<>(
+                200,
+                "Seasonal crops fetched successfully",
+                cropService.getCropsBySeason(farmerId,
+                        season,
+                        pageable)
+        );
+    }
+
+    // =============================
+    // Delete Crop
+    // =============================
+    @DeleteMapping("/{cropId}")
+    public ApiResponse<String> deleteCrop(
+            @PathVariable Long cropId) {
+
+        cropService.deleteCrop(cropId);
+
+        return new ApiResponse<>(
+                200,
+                "Crop deleted successfully",
+                null
+        );
+    }
+
+    // =============================
+    // Revenue Summary
+    // =============================
+    @GetMapping("/revenue-summary")
+    public ApiResponse<Double> getRevenue(
             @PathVariable Long farmerId) {
 
-        Double revenue =
-                cropService.calculateTotalRevenue(farmerId);
-
-        return ResponseEntity.ok(
-                new ApiResponse<>(
-                        200,
-                        "Total revenue calculated successfully",
-                        revenue
-                )
+        return new ApiResponse<>(
+                200,
+                "Total revenue calculated",
+                cropService.calculateTotalRevenue(farmerId)
         );
     }
 
+    // =============================
+    // Yield Summary
+    // =============================
     @GetMapping("/yield-summary")
-    public ResponseEntity<ApiResponse<YieldSummary>> getYieldSummary(
+    public ApiResponse<Double> getYield(
             @PathVariable Long farmerId) {
 
-        YieldSummary summary =
-                cropService.calculateYieldSummary(farmerId);
-
-        return ResponseEntity.ok(
-                new ApiResponse<>(
-                        200,
-                        "Yield summary calculated successfully",
-                        summary
-                )
+        return new ApiResponse<>(
+                200,
+                "Total yield calculated",
+                cropService.calculateTotalYield(farmerId)
         );
     }
 }
