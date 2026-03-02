@@ -4,8 +4,8 @@ import com.smartagriculture.entity.Crop;
 import com.smartagriculture.entity.Farmer;
 import com.smartagriculture.repository.CropRepository;
 import com.smartagriculture.repository.FarmerRepository;
-import org.springframework.stereotype.Service;
 
+import org.springframework.stereotype.Service;
 import java.util.List;
 
 @Service
@@ -32,12 +32,7 @@ public class CropService {
         return cropRepository.findByFarmerId(farmerId);
     }
 
-    public Double calculateRevenue(Long farmerId) {
-        List<Crop> crops = cropRepository.findByFarmerId(farmerId);
-
-        return crops.stream()
-                .mapToDouble(c ->
-                        c.getActualYield() * c.getMarketPrice())
-                .sum();
+    public void deleteCrop(Long id) {
+        cropRepository.deleteById(id);
     }
 }

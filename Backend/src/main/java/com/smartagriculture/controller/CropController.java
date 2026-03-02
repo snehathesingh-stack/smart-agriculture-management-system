@@ -2,6 +2,7 @@ package com.smartagriculture.controller;
 
 import com.smartagriculture.entity.Crop;
 import com.smartagriculture.service.CropService;
+
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
@@ -28,8 +29,8 @@ public class CropController {
         return cropService.getCropsByFarmer(farmerId);
     }
 
-    @GetMapping("/revenue")
-    public Double getRevenue(@PathVariable Long farmerId) {
-        return cropService.calculateRevenue(farmerId);
+    @DeleteMapping("/{id}")
+    public void deleteCrop(@PathVariable Long id) {
+        cropService.deleteCrop(id);
     }
 }

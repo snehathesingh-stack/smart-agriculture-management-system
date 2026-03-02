@@ -1,9 +1,7 @@
 package com.smartagriculture.entity;
 
 import jakarta.persistence.*;
-import jakarta.validation.constraints.NotBlank;
-import jakarta.validation.constraints.NotNull;
-import jakarta.validation.constraints.Positive;
+import jakarta.validation.constraints.*;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
 
@@ -15,86 +13,52 @@ public class Crop {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    @NotBlank(message = "Crop name is required")
-    @Column(name = "crop_name", nullable = false)
+    @NotBlank
+    @Column(name = "crop_name")
     private String cropName;
 
-    @NotBlank(message = "Season is required")
-    @Column(nullable = false)
+    @NotBlank
     private String season;
 
-    @NotNull(message = "Expected yield is required")
-    @Positive(message = "Expected yield must be positive")
-    @Column(name = "expected_yield", nullable = false)
+    @NotNull
+    @Positive
+    @Column(name = "expected_yield")
     private Double expectedYield;
 
-    @NotNull(message = "Actual yield is required")
-    @Positive(message = "Actual yield must be positive")
-    @Column(name = "actual_yield", nullable = false)
+    @NotNull
+    @Positive
+    @Column(name = "actual_yield")
     private Double actualYield;
 
-    @NotNull(message = "Market price is required")
-    @Positive(message = "Market price must be positive")
-    @Column(name = "market_price", nullable = false)
+    @NotNull
+    @Positive
+    @Column(name = "market_price")
     private Double marketPrice;
 
-    // ================= RELATIONSHIP =================
-    @ManyToOne(fetch = FetchType.LAZY)
+    @ManyToOne
     @JoinColumn(name = "farmer_id", nullable = false)
-    @JsonIgnore   // Prevent infinite recursion
+    @JsonIgnore
     private Farmer farmer;
 
-    // ================= GETTERS & SETTERS =================
+    // Getters & Setters
 
-    public Long getId() {
-        return id;
-    }
+    public Long getId() { return id; }
 
-    public String getCropName() {
-        return cropName;
-    }
+    public String getCropName() { return cropName; }
+    public void setCropName(String cropName) { this.cropName = cropName; }
 
-    public void setCropName(String cropName) {
-        this.cropName = cropName;
-    }
+    public String getSeason() { return season; }
+    public void setSeason(String season) { this.season = season; }
 
-    public String getSeason() {
-        return season;
-    }
+    public Double getExpectedYield() { return expectedYield; }
+    public void setExpectedYield(Double expectedYield) { this.expectedYield = expectedYield; }
 
-    public void setSeason(String season) {
-        this.season = season;
-    }
+    public Double getActualYield() { return actualYield; }
+    public void setActualYield(Double actualYield) { this.actualYield = actualYield; }
 
-    public Double getExpectedYield() {
-        return expectedYield;
-    }
+    public Double getMarketPrice() { return marketPrice; }
+    public void setMarketPrice(Double marketPrice) { this.marketPrice = marketPrice; }
 
-    public void setExpectedYield(Double expectedYield) {
-        this.expectedYield = expectedYield;
-    }
-
-    public Double getActualYield() {
-        return actualYield;
-    }
-
-    public void setActualYield(Double actualYield) {
-        this.actualYield = actualYield;
-    }
-
-    public Double getMarketPrice() {
-        return marketPrice;
-    }
-
-    public void setMarketPrice(Double marketPrice) {
-        this.marketPrice = marketPrice;
-    }
-
-    public Farmer getFarmer() {
-        return farmer;
-    }
-
-    public void setFarmer(Farmer farmer) {
-        this.farmer = farmer;
-    }
+    public Farmer getFarmer() { return farmer; }
+    public void setFarmer(Farmer farmer) { this.farmer = farmer; }
 }
