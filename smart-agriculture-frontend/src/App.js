@@ -1,43 +1,43 @@
 import React, { useState } from "react";
-import { Container, Button, Box } from "@mui/material";
 import FarmerPage from "./FarmerPage";
 import CropPage from "./CropPage";
 
 function App() {
   const [selectedFarmer, setSelectedFarmer] = useState(null);
-  const [view, setView] = useState("farmers");
+
+  const openCropPage = (farmer) => {
+    setSelectedFarmer(farmer);
+  };
+
+  const goBack = () => {
+    setSelectedFarmer(null);
+  };
 
   return (
-    <Container sx={{ mt: 4 }}>
-      <Box sx={{ mb: 3 }}>
-        <Button
-          onClick={() => setView("farmers")}
-          variant="contained"
-          sx={{ mr: 2 }}
-        >
-          Farmers
-        </Button>
+    <div>
+      {selectedFarmer ? (
+        <>
+          <button
+            style={{
+              margin: "20px",
+              padding: "6px 12px",
+              background: "#2e7d32",
+              color: "white",
+              border: "none",
+              borderRadius: "4px",
+              cursor: "pointer"
+            }}
+            onClick={goBack}
+          >
+            ← Back to Farmers
+          </button>
 
-        <Button
-          onClick={() => setView("crops")}
-          variant="contained"
-          disabled={!selectedFarmer}
-        >
-          Crops
-        </Button>
-      </Box>
-
-      {view === "farmers" && (
-        <FarmerPage
-          setSelectedFarmer={setSelectedFarmer}
-          setView={setView}
-        />
+          <CropPage farmer={selectedFarmer} />
+        </>
+      ) : (
+        <FarmerPage openCropPage={openCropPage} />
       )}
-
-      {view === "crops" && selectedFarmer && (
-        <CropPage farmer={selectedFarmer} />
-      )}
-    </Container>
+    </div>
   );
 }
 
