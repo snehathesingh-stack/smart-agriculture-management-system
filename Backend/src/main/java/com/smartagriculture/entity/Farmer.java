@@ -1,40 +1,41 @@
 package com.smartagriculture.entity;
 
 import jakarta.persistence.*;
-import jakarta.validation.constraints.*;
+import jakarta.validation.constraints.NotBlank;
+import jakarta.validation.constraints.NotNull;
+
+import java.util.List;
+
+import com.fasterxml.jackson.annotation.JsonIgnore;
 
 @Entity
-@Table(name = "farmers")
+@Table(name = "farmer")
 public class Farmer {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    @NotBlank(message = "Name is required")
-    @Column(nullable = false)
+    @NotBlank
     private String name;
 
-    @NotBlank(message = "Phone is required")
-    @Pattern(regexp = "^[0-9]{10}$",
-            message = "Phone must be exactly 10 digits")
-    @Column(nullable = false)
+    @NotBlank
     private String phone;
 
-    @NotBlank(message = "Location is required")
-    @Column(nullable = false)
+    @NotBlank
     private String location;
 
-    @NotNull(message = "Land area is required")
-    @Positive(message = "Land area must be positive")
-    @Column(nullable = false)
+    @NotNull
     private Double landArea;
 
-    @NotBlank(message = "Soil type is required")
-    @Column(nullable = false)
+    @NotBlank
     private String soilType;
 
-    public Farmer() {}
+    @OneToMany(mappedBy = "farmer", cascade = CascadeType.ALL, orphanRemoval = true)
+    @JsonIgnore
+    private List<Crop> crops;
+
+    // Getters & Setters
 
     public Long getId() { return id; }
 

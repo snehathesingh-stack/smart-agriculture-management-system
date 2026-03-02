@@ -14,8 +14,10 @@ function CropPage({ farmer }) {
   });
 
   useEffect(() => {
-    fetchCrops();
-  }, []);
+    if (farmer) {
+      fetchCrops();
+    }
+  }, [farmer]);
 
   const fetchCrops = async () => {
     const response = await axios.get(
@@ -43,10 +45,20 @@ function CropPage({ farmer }) {
     });
   };
 
+  // ✅ DELETE CROP (NOW INSIDE COMPONENT)
+  const deleteCrop = async (id) => {
+    await axios.delete(
+      `${API_BASE}/farmers/${farmer.id}/crops/${id}`
+    );
+    fetchCrops();
+  };
+
   const totalRevenue = crops.reduce(
     (sum, crop) => sum + crop.actualYield * crop.marketPrice,
     0
   );
+
+  if (!farmer) return null;
 
   return (
     <div style={{ padding: "40px" }}>
@@ -109,6 +121,7 @@ function CropPage({ farmer }) {
             <th>Expected</th>
             <th>Actual</th>
             <th>Market Price</th>
+            <th>Delete</th>
           </tr>
         </thead>
         <tbody>
@@ -119,6 +132,14 @@ function CropPage({ farmer }) {
               <td>{crop.expectedYield}</td>
               <td>{crop.actualYield}</td>
               <td>{crop.marketPrice}</td>
+              <td>
+                <button
+                  style={{ background: "red", color: "white", border: "none" }}
+                  onClick={() => deleteCrop(crop.id)}
+                >
+                  Delete
+                </button>
+              </td>
             </tr>
           ))}
         </tbody>
@@ -131,7 +152,7 @@ const tableStyle = {
   width: "100%",
   borderCollapse: "collapse",
   background: "white",
-  boxShadow: "0 2px 10px rgba(0,0,0,0.1)"
+  boxShadow: "0 2px 10px rgba(0,0,0,0.1)",
 };
 
 const buttonStyle = {
@@ -141,7 +162,7 @@ const buttonStyle = {
   border: "none",
   borderRadius: "4px",
   cursor: "pointer",
-  marginLeft: "10px"
+  marginLeft: "10px",
 };
 
 export default CropPage;
