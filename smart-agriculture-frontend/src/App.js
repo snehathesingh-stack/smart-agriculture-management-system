@@ -256,4 +256,3 @@ function App() {
 }
 
 export default App;
-console.log("API:", API_BASE);
