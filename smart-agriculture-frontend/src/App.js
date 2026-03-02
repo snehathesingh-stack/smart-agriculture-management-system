@@ -10,9 +10,14 @@ function App() {
   return (
     <Container sx={{ mt: 4 }}>
       <Box sx={{ mb: 3 }}>
-        <Button onClick={() => setView("farmers")} variant="contained" sx={{ mr: 2 }}>
+        <Button
+          onClick={() => setView("farmers")}
+          variant="contained"
+          sx={{ mr: 2 }}
+        >
           Farmers
         </Button>
+
         <Button
           onClick={() => setView("crops")}
           variant="contained"

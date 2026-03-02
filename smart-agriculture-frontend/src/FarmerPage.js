@@ -12,10 +12,12 @@ import {
   TableCell,
   TableBody,
   Box,
+  Alert,
 } from "@mui/material";
 
 function FarmerPage({ setSelectedFarmer, setView }) {
   const [farmers, setFarmers] = useState([]);
+  const [error, setError] = useState("");
   const [form, setForm] = useState({
     name: "",
     phone: "",
@@ -28,9 +30,25 @@ function FarmerPage({ setSelectedFarmer, setView }) {
     fetchFarmers();
   }, []);
 
+  // ✅ SAFE FETCH FIX
   const fetchFarmers = async () => {
-    const res = await API.get("/farmers");
-    setFarmers(res.data);
+    try {
+      const res = await API.get("/farmers");
+
+      // Works for both List and ApiResponse
+      if (Array.isArray(res.data)) {
+        setFarmers(res.data);
+      } else if (Array.isArray(res.data.data)) {
+        setFarmers(res.data.data);
+      } else {
+        setFarmers([]);
+      }
+
+      setError("");
+    } catch (err) {
+      setError("Unable to fetch farmers.");
+      setFarmers([]);
+    }
   };
 
   const handleChange = (e) => {
@@ -43,19 +61,23 @@ function FarmerPage({ setSelectedFarmer, setView }) {
       return;
     }
 
-    await API.post("/farmers", {
-      ...form,
-      landArea: Number(form.landArea),
-    });
+    try {
+      await API.post("/farmers", {
+        ...form,
+        landArea: Number(form.landArea),
+      });
 
-    fetchFarmers();
-    setForm({
-      name: "",
-      phone: "",
-      location: "",
-      landArea: "",
-      soilType: "",
-    });
+      fetchFarmers();
+      setForm({
+        name: "",
+        phone: "",
+        location: "",
+        landArea: "",
+        soilType: "",
+      });
+    } catch {
+      alert("Failed to add farmer");
+    }
   };
 
   return (
@@ -63,6 +85,8 @@ function FarmerPage({ setSelectedFarmer, setView }) {
       <Typography variant="h4" gutterBottom>
         Farmer Management
       </Typography>
+
+      {error && <Alert severity="error">{error}</Alert>}
 
       <Card sx={{ mb: 4 }}>
         <CardContent>
@@ -72,8 +96,14 @@ function FarmerPage({ setSelectedFarmer, setView }) {
             <TextField name="location" label="Location" value={form.location} onChange={handleChange} />
             <TextField name="landArea" label="Land Area" type="number" value={form.landArea} onChange={handleChange} />
 
-            <TextField select name="soilType" label="Soil" value={form.soilType}
-              onChange={handleChange} SelectProps={{ native: true }}>
+            <TextField
+              select
+              name="soilType"
+              label="Soil"
+              value={form.soilType}
+              onChange={handleChange}
+              SelectProps={{ native: true }}
+            >
               <option value="">Select Soil</option>
               <option value="Black">Black</option>
               <option value="Red">Red</option>
@@ -101,26 +131,27 @@ function FarmerPage({ setSelectedFarmer, setView }) {
           </TableRow>
         </TableHead>
         <TableBody>
-          {farmers.map((farmer) => (
-            <TableRow key={farmer.id}>
-              <TableCell>{farmer.name}</TableCell>
-              <TableCell>{farmer.phone}</TableCell>
-              <TableCell>{farmer.location}</TableCell>
-              <TableCell>{farmer.landArea}</TableCell>
-              <TableCell>{farmer.soilType}</TableCell>
-              <TableCell>
-                <Button
-                  variant="outlined"
-                  onClick={() => {
-                    setSelectedFarmer(farmer);
-                    setView("crops");
-                  }}
-                >
-                  Manage Crops
-                </Button>
-              </TableCell>
-            </TableRow>
-          ))}
+          {Array.isArray(farmers) &&
+            farmers.map((farmer) => (
+              <TableRow key={farmer.id}>
+                <TableCell>{farmer.name}</TableCell>
+                <TableCell>{farmer.phone}</TableCell>
+                <TableCell>{farmer.location}</TableCell>
+                <TableCell>{farmer.landArea}</TableCell>
+                <TableCell>{farmer.soilType}</TableCell>
+                <TableCell>
+                  <Button
+                    variant="outlined"
+                    onClick={() => {
+                      setSelectedFarmer(farmer);
+                      setView("crops");
+                    }}
+                  >
+                    Manage Crops
+                  </Button>
+                </TableCell>
+              </TableRow>
+            ))}
         </TableBody>
       </Table>
     </>

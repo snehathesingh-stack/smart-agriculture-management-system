@@ -30,14 +30,37 @@ function CropPage({ farmer }) {
     fetchRevenue();
   }, []);
 
+  // ✅ FIXED FETCH (handles ApiResponse)
   const fetchCrops = async () => {
-    const res = await API.get(`/farmers/${farmer.id}/crops`);
-    setCrops(res.data);
+    try {
+      const res = await API.get(`/farmers/${farmer.id}/crops`);
+
+      if (Array.isArray(res.data.data)) {
+        setCrops(res.data.data);
+      } else if (Array.isArray(res.data)) {
+        setCrops(res.data);
+      } else {
+        setCrops([]);
+      }
+    } catch {
+      setCrops([]);
+    }
   };
 
   const fetchRevenue = async () => {
-    const res = await API.get(`/farmers/${farmer.id}/crops/revenue`);
-    setRevenue(res.data);
+    try {
+      const res = await API.get(
+        `/farmers/${farmer.id}/crops/revenue`
+      );
+
+      if (res.data.data !== undefined) {
+        setRevenue(res.data.data);
+      } else {
+        setRevenue(res.data);
+      }
+    } catch {
+      setRevenue(0);
+    }
   };
 
   const handleChange = (e) => {
@@ -45,15 +68,27 @@ function CropPage({ farmer }) {
   };
 
   const addCrop = async () => {
-    await API.post(`/farmers/${farmer.id}/crops`, {
-      ...form,
-      expectedYield: Number(form.expectedYield),
-      actualYield: Number(form.actualYield),
-      marketPrice: Number(form.marketPrice),
-    });
+    try {
+      await API.post(`/farmers/${farmer.id}/crops`, {
+        ...form,
+        expectedYield: Number(form.expectedYield),
+        actualYield: Number(form.actualYield),
+        marketPrice: Number(form.marketPrice),
+      });
 
-    fetchCrops();
-    fetchRevenue();
+      fetchCrops();
+      fetchRevenue();
+
+      setForm({
+        cropName: "",
+        season: "",
+        expectedYield: "",
+        actualYield: "",
+        marketPrice: "",
+      });
+    } catch {
+      alert("Failed to add crop");
+    }
   };
 
   return (
@@ -62,23 +97,66 @@ function CropPage({ farmer }) {
         Crops of {farmer.name}
       </Typography>
 
+      {/* FORM */}
       <Card sx={{ mb: 4 }}>
         <CardContent>
           <Box display="flex" gap={2} flexWrap="wrap">
-            <TextField select name="cropName" label="Crop"
-              value={form.cropName} onChange={handleChange}
-              SelectProps={{ native: true }}>
+
+            {/* Crop Dropdown */}
+            <TextField
+              select
+              name="cropName"
+              label="Crop"
+              value={form.cropName}
+              onChange={handleChange}
+              SelectProps={{ native: true }}
+            >
               <option value="">Select Crop</option>
               <option value="Rice">Rice</option>
               <option value="Wheat">Wheat</option>
               <option value="Cotton">Cotton</option>
               <option value="Sugarcane">Sugarcane</option>
+              <option value="Maize">Maize</option>
             </TextField>
 
-            <TextField name="season" label="Season" value={form.season} onChange={handleChange} />
-            <TextField name="expectedYield" label="Expected Yield" type="number" value={form.expectedYield} onChange={handleChange} />
-            <TextField name="actualYield" label="Actual Yield" type="number" value={form.actualYield} onChange={handleChange} />
-            <TextField name="marketPrice" label="Market Price" type="number" value={form.marketPrice} onChange={handleChange} />
+            {/* Season Dropdown */}
+            <TextField
+              select
+              name="season"
+              label="Season"
+              value={form.season}
+              onChange={handleChange}
+              SelectProps={{ native: true }}
+            >
+              <option value="">Select Season</option>
+              <option value="Kharif">Kharif</option>
+              <option value="Rabi">Rabi</option>
+              <option value="Zaid">Zaid</option>
+            </TextField>
+
+            <TextField
+              name="expectedYield"
+              label="Expected Yield"
+              type="number"
+              value={form.expectedYield}
+              onChange={handleChange}
+            />
+
+            <TextField
+              name="actualYield"
+              label="Actual Yield"
+              type="number"
+              value={form.actualYield}
+              onChange={handleChange}
+            />
+
+            <TextField
+              name="marketPrice"
+              label="Market Price"
+              type="number"
+              value={form.marketPrice}
+              onChange={handleChange}
+            />
 
             <Button variant="contained" onClick={addCrop}>
               Add Crop
@@ -87,10 +165,12 @@ function CropPage({ farmer }) {
         </CardContent>
       </Card>
 
-      <Typography variant="h6">
+      {/* REVENUE */}
+      <Typography variant="h6" sx={{ mb: 2 }}>
         Total Revenue: ₹ {revenue}
       </Typography>
 
+      {/* TABLE */}
       <Table>
         <TableHead>
           <TableRow>
@@ -98,19 +178,21 @@ function CropPage({ farmer }) {
             <TableCell>Season</TableCell>
             <TableCell>Expected</TableCell>
             <TableCell>Actual</TableCell>
-            <TableCell>Price</TableCell>
+            <TableCell>Market Price</TableCell>
           </TableRow>
         </TableHead>
+
         <TableBody>
-          {crops.map((crop) => (
-            <TableRow key={crop.id}>
-              <TableCell>{crop.cropName}</TableCell>
-              <TableCell>{crop.season}</TableCell>
-              <TableCell>{crop.expectedYield}</TableCell>
-              <TableCell>{crop.actualYield}</TableCell>
-              <TableCell>{crop.marketPrice}</TableCell>
-            </TableRow>
-          ))}
+          {Array.isArray(crops) &&
+            crops.map((crop) => (
+              <TableRow key={crop.id}>
+                <TableCell>{crop.cropName}</TableCell>
+                <TableCell>{crop.season}</TableCell>
+                <TableCell>{crop.expectedYield}</TableCell>
+                <TableCell>{crop.actualYield}</TableCell>
+                <TableCell>{crop.marketPrice}</TableCell>
+              </TableRow>
+            ))}
         </TableBody>
       </Table>
     </>
