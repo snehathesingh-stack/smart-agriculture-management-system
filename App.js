@@ -35,7 +35,8 @@ function App() {
   const [openSnack, setOpenSnack] = useState(false);
   const [snackMessage, setSnackMessage] = useState("");
 
-  const API_BASE = "http://localhost:8081";
+  const API_BASE = "https://smart-agriculture-backend-wsh4.onrender.com";
+
 
   useEffect(() => {
     fetchFarmers();
