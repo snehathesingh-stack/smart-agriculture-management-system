@@ -152,19 +152,6 @@ Frontend runs at:
 
 ---
 
-## 📸 Screenshots (Add Later)
-
-```
-screenshots/
-├── login.png
-├── dashboard.png
-```<img width="1919" height="976" alt="image" src="https://github.com/user-attachments/assets/e4933781-d26c-491f-a690-64758c04c81c" />
-<img width="1917" height="964" alt="image" src="https://github.com/user-attachments/assets/9fddb3f5-545e-4678-ad5b-42309a888c89" />
-<img width="1919" height="971" alt="image" src="https://github.com/user-attachments/assets/f841fd62-30e5-444d-8ed1-5f954574849e" />
-
-
-
----
 
 ## 🚀 Future Enhancements
 
