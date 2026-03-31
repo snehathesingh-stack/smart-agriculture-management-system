@@ -1,93 +1,112 @@
-Smart Agriculture Management System 🌾
-📌 Project Overview
+# 🌾 Smart Agriculture System
 
-A full-stack backend REST API built using Spring Boot for managing farmers, crops, yield tracking, and revenue analytics.
+A full-stack Smart Agriculture web application built with React (frontend) and Spring Boot (backend), with MySQL database.
 
-This system enables efficient agricultural data management with enterprise-grade architecture, validation, pagination, and analytics features.
+---
 
-🚀 Tech Stack
+## 🗂️ Project Structure
 
-Java 17
+```
+smart-agriculture-system/
+├── frontend/          ← React app (port 3000)
+│   └── src/
+│       ├── pages/
+│       │   ├── Login.js
+│       │   ├── Signup.js
+│       │   ├── FarmerDashboard.js
+│       │   └── AdminDashboard.js
+│       └── App.js
+├── backend/           ← Spring Boot app (port 8081)
+│   ├── src/main/java/com/smartagri/
+│   │   ├── controller/
+│   │   ├── service/
+│   │   ├── entity/
+│   │   ├── repository/
+│   │   ├── config/
+│   │   └── security/
+│   ├── src/main/resources/application.properties
+│   └── pom.xml
+├── database/
+│   └── schema.sql
+├── docs/
+│   └── SCMP_Report.docx
+└── tests/
+    └── App.test.js
+```
 
-Spring Boot
+---
 
-Spring Data JPA
+## ⚙️ Setup Instructions
 
-MySQL
+### Step 1 — MySQL Database
+Open MySQL Workbench or terminal and run:
+```sql
+CREATE DATABASE smart_agri;
+```
 
-Swagger (OpenAPI)
+### Step 2 — Start Backend (Spring Boot)
+```bash
+cd backend
+mvn spring-boot:run
+```
+Backend runs at: http://localhost:8081
 
-Maven
+**First time only — seed admin user:**
+Open browser → http://localhost:8081/auth/seed
 
-Git & GitHub
+### Step 3 — Start Frontend (React)
+```bash
+cd frontend
+npm install
+npm start
+```
+Frontend runs at: http://localhost:3000
 
-🏗️ Architecture
+---
 
-Layered Architecture:
+## 👤 Login Credentials
 
-Controller Layer (REST APIs)
+| Role   | Username | Password  |
+|--------|----------|-----------|
+| Admin  | admin    | admin123  |
+| Farmer | (created during signup) | (your password) |
 
-Service Layer (Business Logic)
+---
 
-Repository Layer (JPA Data Access)
+## 🔗 API Endpoints
 
-Exception Handling (Global)
+| Method | Endpoint | Description |
+|--------|----------|-------------|
+| POST | /auth/login | Login (farmer or admin) |
+| POST | /auth/signup | Register new farmer account |
+| GET  | /auth/seed | Create admin user (run once) |
+| GET  | /farmers | Get all farmers |
+| POST | /farmers | Add farmer |
+| DELETE | /farmers/{id} | Delete farmer |
+| GET  | /crops/{farmerId} | Get crops for a farmer |
+| POST | /crops/{farmerId} | Add crop for a farmer |
+| GET  | /weather/{city} | Get weather for a city |
+| GET  | /suggestions/{soilType} | Get crop suggestions |
+| GET  | /dashboard | Admin stats |
 
-Response Wrappers (Standardized API Responses)
+---
 
-✨ Features Implemented
-👨‍🌾 Farmer Module
+## 🛠️ SCM Tools Used
+- **GitHub** — Version control, branching, pull requests
+- **VS Code / IntelliJ** — IDE
+- **Maven** — Build tool
+- **MySQL** — Database
+- **Postman** — API testing
 
-Create Farmer
+---
 
-Update Farmer
+## 🌿 GitHub Branch Strategy
 
-Delete Farmer
-
-Get All Farmers
-
-Pagination Support
-
-🌱 Crop Module
-
-Add crop under farmer
-
-Fetch crops (paginated + season filter)
-
-Calculate total revenue
-
-Yield performance analytics
-
-📊 Analytics
-
-Revenue calculation
-
-Yield summary (Expected vs Actual)
-
-Performance percentage tracking
-
-🛡️ Validation & Error Handling
-
-Field validation
-
-Custom error responses
-
-Global exception handler
-
-ResourceNotFoundException
-
-📘 API Documentation
-
-Swagger UI available at:
-
-http://localhost:8081/swagger-ui/index.html
-
-🎯 Project Type
-
-SCM Academic Project + Resume Portfolio Backend Project
-
-Commit it with message:
-
-git add README.md
-git commit -m "Added professional README documentation"
-git push
+| Branch | Purpose |
+|--------|---------|
+| main | Production-ready code |
+| feature/farmer-login | Farmer login & signup |
+| feature/crop-management | Crop add & tracking |
+| feature/admin-dashboard | Admin panel |
+| feature/weather-api | Weather integration |
+| feature/yield-calculator | Yield & revenue calc |
