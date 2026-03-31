@@ -1,112 +1,197 @@
-# 🌾 Smart Agriculture System
+# 🌾 Smart Agriculture Management System
 
-A full-stack Smart Agriculture web application built with React (frontend) and Spring Boot (backend), with MySQL database.
+A full-stack web application designed to help farmers manage crops, monitor weather conditions, and receive intelligent crop suggestions. The system also provides an admin dashboard for managing farmer data and analytics.
 
 ---
 
-## 🗂️ Project Structure
+## 🚀 Features
+
+* 👨‍🌾 Farmer Dashboard (crop tracking & yield management)
+* 🧑‍💼 Admin Dashboard (manage farmers & monitor system)
+* 🌦️ Weather API integration for real-time updates
+* 🌱 Smart crop suggestions based on soil type
+* 📊 Yield calculator for productivity estimation
+* 🔐 Secure authentication (Login & Signup)
+* 💾 MySQL database integration
+
+---
+
+## 🛠️ Tech Stack
+
+### Frontend
+
+* React.js
+* JavaScript (ES6)
+* CSS
+
+### Backend
+
+* Spring Boot
+* Java
+* REST APIs
+
+### Database
+
+* MySQL
+
+### Tools & Technologies
+
+* Git & GitHub (Version Control)
+* Maven / Gradle (Build Tools)
+* Postman (API Testing)
+* IntelliJ IDEA / VS Code (IDE)
+
+---
+
+## 📁 Project Structure
 
 ```
-smart-agriculture-system/
-├── frontend/          ← React app (port 3000)
-│   └── src/
-│       ├── pages/
-│       │   ├── Login.js
-│       │   ├── Signup.js
-│       │   ├── FarmerDashboard.js
-│       │   └── AdminDashboard.js
-│       └── App.js
-├── backend/           ← Spring Boot app (port 8081)
-│   ├── src/main/java/com/smartagri/
+smart-agriculture-management-system/
+├── smart-agri-ui/       # Frontend (React)
+│   ├── src/
+│   │   ├── components/
+│   │   ├── pages/
+│   │   └── App.js
+│   └── package.json
+│
+├── src/                 # Backend (Spring Boot)
+│   ├── main/java/com/smartagri/
 │   │   ├── controller/
 │   │   ├── service/
 │   │   ├── entity/
 │   │   ├── repository/
-│   │   ├── config/
-│   │   └── security/
-│   ├── src/main/resources/application.properties
-│   └── pom.xml
-├── database/
-│   └── schema.sql
-├── docs/
-│   └── SCMP_Report.docx
-└── tests/
-    └── App.test.js
+│   │   └── config/
+│   ├── main/resources/
+│   │   └── application.properties
+│
+├── pom.xml              # Backend dependencies
+├── build.gradle         # Gradle config (if used)
+├── README.md
 ```
 
 ---
 
 ## ⚙️ Setup Instructions
 
-### Step 1 — MySQL Database
-Open MySQL Workbench or terminal and run:
+### 🔹 Step 1: Clone Repository
+
+```bash
+git clone https://github.com/snehathesingh-stack/smart-agriculture-management-system.git
+cd smart-agriculture-management-system
+```
+
+---
+
+### 🔹 Step 2: Setup Database (MySQL)
+
 ```sql
 CREATE DATABASE smart_agri;
 ```
 
-### Step 2 — Start Backend (Spring Boot)
+---
+
+### 🔹 Step 3: Run Backend
+
 ```bash
-cd backend
 mvn spring-boot:run
 ```
-Backend runs at: http://localhost:8081
 
-**First time only — seed admin user:**
-Open browser → http://localhost:8081/auth/seed
+Backend runs at:
+👉 http://localhost:8081
 
-### Step 3 — Start Frontend (React)
+---
+
+### 🔹 Step 4: Run Frontend
+
 ```bash
-cd frontend
+cd smart-agri-ui
 npm install
 npm start
 ```
-Frontend runs at: http://localhost:3000
+
+Frontend runs at:
+👉 http://localhost:3000
 
 ---
 
 ## 👤 Login Credentials
 
-| Role   | Username | Password  |
-|--------|----------|-----------|
-| Admin  | admin    | admin123  |
-| Farmer | (created during signup) | (your password) |
+| Role   | Username            | Password      |
+| ------ | ------------------- | ------------- |
+| Admin  | admin               | admin123      |
+| Farmer | Register via signup | Your password |
 
 ---
 
 ## 🔗 API Endpoints
 
-| Method | Endpoint | Description |
-|--------|----------|-------------|
-| POST | /auth/login | Login (farmer or admin) |
-| POST | /auth/signup | Register new farmer account |
-| GET  | /auth/seed | Create admin user (run once) |
-| GET  | /farmers | Get all farmers |
-| POST | /farmers | Add farmer |
-| DELETE | /farmers/{id} | Delete farmer |
-| GET  | /crops/{farmerId} | Get crops for a farmer |
-| POST | /crops/{farmerId} | Add crop for a farmer |
-| GET  | /weather/{city} | Get weather for a city |
-| GET  | /suggestions/{soilType} | Get crop suggestions |
-| GET  | /dashboard | Admin stats |
+| Method | Endpoint                | Description      |
+| ------ | ----------------------- | ---------------- |
+| POST   | /auth/login             | Login            |
+| POST   | /auth/signup            | Register         |
+| GET    | /auth/seed              | Create admin     |
+| GET    | /farmers                | Get all farmers  |
+| POST   | /farmers                | Add farmer       |
+| DELETE | /farmers/{id}           | Delete farmer    |
+| GET    | /crops/{farmerId}       | Get crops        |
+| POST   | /crops/{farmerId}       | Add crop         |
+| GET    | /weather/{city}         | Weather data     |
+| GET    | /suggestions/{soilType} | Crop suggestions |
 
 ---
 
-## 🛠️ SCM Tools Used
-- **GitHub** — Version control, branching, pull requests
-- **VS Code / IntelliJ** — IDE
-- **Maven** — Build tool
-- **MySQL** — Database
-- **Postman** — API testing
+## 🌿 Git Workflow
+
+* `main` → Stable production code
+* Feature branches for development:
+
+  * `feature/authentication`
+  * `feature/farmer-dashboard`
+  * `feature/admin-dashboard`
+  * `feature/weather-api`
 
 ---
 
-## 🌿 GitHub Branch Strategy
+## 📸 Screenshots (Add Later)
 
-| Branch | Purpose |
-|--------|---------|
-| main | Production-ready code |
-| feature/farmer-login | Farmer login & signup |
-| feature/crop-management | Crop add & tracking |
-| feature/admin-dashboard | Admin panel |
-| feature/weather-api | Weather integration |
-| feature/yield-calculator | Yield & revenue calc |
+```
+screenshots/
+├── login.png
+├── dashboard.png
+```<img width="1919" height="976" alt="image" src="https://github.com/user-attachments/assets/e4933781-d26c-491f-a690-64758c04c81c" />
+<img width="1917" height="964" alt="image" src="https://github.com/user-attachments/assets/9fddb3f5-545e-4678-ad5b-42309a888c89" />
+<img width="1919" height="971" alt="image" src="https://github.com/user-attachments/assets/f841fd62-30e5-444d-8ed1-5f954574849e" />
+
+
+
+---
+
+## 🚀 Future Enhancements
+
+* 📱 Mobile responsiveness improvements
+* 🤖 AI-based crop prediction
+* 📊 Advanced analytics dashboard
+* ☁️ Cloud deployment (AWS / Vercel)
+
+---
+
+## 👩‍💻 Author
+
+**Sneha Singh**
+📧 Connect via GitHub: https://github.com/snehathesingh-stack
+
+---
+
+## ⭐ Acknowledgements
+
+* Spring Boot Documentation
+* React Documentation
+* OpenWeather API
+
+---
+
+## 📌 Conclusion
+
+This project demonstrates a complete full-stack application integrating frontend, backend, and database technologies to solve real-world agricultural challenges.
+
+---
