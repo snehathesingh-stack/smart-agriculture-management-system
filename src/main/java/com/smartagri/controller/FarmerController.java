@@ -19,22 +19,34 @@ public class FarmerController {
         this.farmerService = farmerService;
     }
 
-    // GET all farmers (admin)
+    // GET all farmers
     @GetMapping
     public List<Farmer> getFarmers() {
         return farmerService.getAll();
     }
 
-    // POST add farmer (admin adds)
+    // POST add farmer
     @PostMapping
     public Farmer addFarmer(@RequestBody Farmer farmer) {
         return farmerService.save(farmer);
     }
 
-    // GET single farmer by ID
+    // GET farmer by ID
     @GetMapping("/{id}")
     public ResponseEntity<?> getFarmer(@PathVariable Long id) {
         return farmerService.getById(id)
+                .map(f -> ResponseEntity.ok(f))
+                .orElse(ResponseEntity.notFound().build());
+    }
+
+    // GET farmer by name (used after login to find matching farmer)
+    @GetMapping("/by-name/{name}")
+    public ResponseEntity<?> getFarmerByName(@PathVariable String name) {
+        List<Farmer> all = farmerService.getAll();
+        return all.stream()
+                .filter(f -> f.getName() != null &&
+                        f.getName().toLowerCase().trim().equals(name.toLowerCase().trim()))
+                .findFirst()
                 .map(f -> ResponseEntity.ok(f))
                 .orElse(ResponseEntity.notFound().build());
     }
