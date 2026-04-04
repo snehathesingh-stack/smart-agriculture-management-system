@@ -546,7 +546,7 @@ function FarmerDashboard() {
 
                 <label style={S.lbl}>Land Area (acres)</label>
                 <input style={S.inp} type="number" value={ycArea} min="0.1" step="0.1" onChange={e => setYcArea(Number(e.target.value) || 0.1)} />
-
+// Feature: Multi-crop tracking with yield chart
                 <label style={S.lbl}>Soil Quality</label>
                 <select style={S.inp} value={ycSq} onChange={e => setYcSq(Number(e.target.value))}>
                   <option value={1}>Excellent (100%)</option>
@@ -634,4 +634,6 @@ const S = {
   td: { padding: "10px 12px", fontSize: "13px", color: "#333" },
 };
 
-export default FarmerDashboard;
+export default FarmerDashboard;// crop management feature
+// weather api feature
+// yield calculator feature
