@@ -546,7 +546,7 @@ function FarmerDashboard() {
 
                 <label style={S.lbl}>Land Area (acres)</label>
                 <input style={S.inp} type="number" value={ycArea} min="0.1" step="0.1" onChange={e => setYcArea(Number(e.target.value) || 0.1)} />
-
+// Feature: Multi-crop tracking with yield chart
                 <label style={S.lbl}>Soil Quality</label>
                 <select style={S.inp} value={ycSq} onChange={e => setYcSq(Number(e.target.value))}>
                   <option value={1}>Excellent (100%)</option>
@@ -635,3 +635,4 @@ const S = {
 };
 
 export default FarmerDashboard;
+// Yield Calculator - MSP Revenue Estimation

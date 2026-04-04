@@ -9,7 +9,7 @@ function AdminDashboard() {
   const [form, setForm] = useState({ name:"", location:"", soilType:"", landSize:"" });
   const [search, setSearch] = useState("");
   const [msg, setMsg] = useState("");
-
+// Feature: Admin dashboard with farmer management
   useEffect(() => {
     if (localStorage.getItem("role") !== "ADMIN") { navigate("/"); return; }
     loadFarmers();
@@ -199,4 +199,4 @@ function AdminDashboard() {
 }
 
 export default AdminDashboard;
-// Admin Dashboard - Farmer Management
+export default AdminDashboard;
