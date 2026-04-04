@@ -634,6 +634,4 @@ const S = {
   td: { padding: "10px 12px", fontSize: "13px", color: "#333" },
 };
 
-export default FarmerDashboard;// crop management feature
-// weather api feature
-// yield calculator feature
+export default FarmerDashboard;
