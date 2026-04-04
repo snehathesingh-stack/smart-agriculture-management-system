@@ -79,7 +79,7 @@ function Login() {
     }
     setLoading(false);
   };
-
+// Feature: Farmer Login with JWT Authentication
   return (
     <div style={S.page}>
       {/* LEFT */}
@@ -171,4 +171,4 @@ const S = {
 };
 
 export default Login;
-// Farmer Login - JWT Authentication
+export default Login;\
