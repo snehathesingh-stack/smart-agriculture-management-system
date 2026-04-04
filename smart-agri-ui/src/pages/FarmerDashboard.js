@@ -637,3 +637,4 @@ const S = {
 export default FarmerDashboard;// crop management feature
 // weather api feature
 // yield calculator feature
+// feat: crop management
